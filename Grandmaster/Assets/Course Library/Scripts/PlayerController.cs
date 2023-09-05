@@ -5,11 +5,14 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     public float speed;
+    float speedInitial;
     public float hori;
     public float forward;
     public GameObject visual;
+    public GameObject proj;
     bool grounded;
     public bool hasDash = false;
+    public bool hasKaboom = false;
     public float dashMomentum;
     public GameObject particles;
     Rigidbody rb;
@@ -17,6 +20,7 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        speedInitial = speed;
     }
 
     // Update is called once per frame
@@ -28,10 +32,12 @@ public class PlayerController : MonoBehaviour
         if (hasDash)
         {
             particles.SetActive(true);
+            speed = speedInitial * 1.3f;
         }
         else
         {
             particles.SetActive(false);
+            speed = speedInitial;
         }
         if (grounded)
         {
@@ -59,17 +65,42 @@ public class PlayerController : MonoBehaviour
 
     private void OnTriggerEnter(Collider collision)
     {
-        if(collision.gameObject.CompareTag("Powerup"))
+        if(collision.gameObject.CompareTag("Dash"))
         {
             hasDash = true;
             Destroy(collision.gameObject);
-            StartCoroutine(PowerupCoroutine());
+            StartCoroutine(DashCoroutine());
+        }
+
+        if (collision.gameObject.CompareTag("Kaboom"))
+        {
+            hasKaboom = true;
+            Destroy(collision.gameObject);
+            StartCoroutine(KaboomCoroutine());
         }
     }
 
-    IEnumerator PowerupCoroutine()
+    IEnumerator DashCoroutine()
     {
         yield return new WaitForSeconds(5);
         hasDash = false;
+    }
+
+    IEnumerator KaboomCoroutine()
+    {
+        StartCoroutine(Blastin());
+        yield return new WaitForSeconds(5);
+        hasKaboom = false;
+    }
+
+    IEnumerator Blastin()
+    {
+        if (hasKaboom)
+        {
+            yield return new WaitForSeconds(0.5f);
+            GameObject projectile = Instantiate(proj, transform.position + rb.velocity.normalized, Quaternion.identity);
+            projectile.GetComponent<Rigidbody>().AddRelativeForce(rb.velocity.normalized * 20, ForceMode.Impulse);
+            StartCoroutine(Blastin());
+        }
     }
 }
