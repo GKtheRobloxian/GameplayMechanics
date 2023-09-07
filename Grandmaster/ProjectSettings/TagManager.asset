@@ -10,6 +10,7 @@ TagManager:
   - Enemy
   - Dash
   - Kaboom
+  - Slam
   layers:
   - Default
   - TransparentFX

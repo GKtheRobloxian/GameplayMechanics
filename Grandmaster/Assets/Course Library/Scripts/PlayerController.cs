@@ -5,14 +5,18 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     public float speed;
+    public float blastVelocity;
     float speedInitial;
     public float hori;
     public float forward;
     public GameObject visual;
     public GameObject proj;
-    bool grounded;
+    public GameObject projAimer;
+    public GameObject slamHitbox;
+    public bool grounded = false;
     public bool hasDash = false;
     public bool hasKaboom = false;
+    public bool hasSlam = false;
     public float dashMomentum;
     public GameObject particles;
     Rigidbody rb;
@@ -26,6 +30,15 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (hasKaboom)
+        {
+            projAimer.SetActive(true);
+        }
+        else
+        {
+            projAimer.SetActive(false);
+        }
+        slamHitbox.SetActive(hasSlam);
         visual.transform.position = transform.position;
         forward = Input.GetAxisRaw("Vertical");
         hori = Input.GetAxisRaw("Horizontal");
@@ -63,6 +76,14 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    private void OnCollisionExit(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            grounded = false;
+        }
+    }
+
     private void OnTriggerEnter(Collider collision)
     {
         if(collision.gameObject.CompareTag("Dash"))
@@ -78,6 +99,20 @@ public class PlayerController : MonoBehaviour
             Destroy(collision.gameObject);
             StartCoroutine(KaboomCoroutine());
         }
+
+        if (collision.gameObject.CompareTag("Slam"))
+        {
+            hasSlam = true;
+            Destroy(collision.gameObject);
+            StartCoroutine(SlamCheck());
+        }
+    }
+    IEnumerator SlamCheck()
+    {
+        yield return new WaitForSeconds(0.5f);
+        hasSlam = false;
+        slamHitbox.SetActive(false);
+        StopCoroutine(SlamCheck());
     }
 
     IEnumerator DashCoroutine()
@@ -98,8 +133,8 @@ public class PlayerController : MonoBehaviour
         if (hasKaboom)
         {
             yield return new WaitForSeconds(0.5f);
-            GameObject projectile = Instantiate(proj, transform.position + rb.velocity.normalized, Quaternion.identity);
-            projectile.GetComponent<Rigidbody>().AddRelativeForce(rb.velocity.normalized * 20, ForceMode.Impulse);
+            GameObject projectile = Instantiate(proj, projAimer.transform.position, Quaternion.identity);
+            projectile.GetComponent<Rigidbody>().AddRelativeForce((projAimer.transform.position-transform.position).normalized * blastVelocity, ForceMode.Impulse);
             StartCoroutine(Blastin());
         }
     }
