@@ -5,6 +5,7 @@ using UnityEngine;
 public class Enemy : MonoBehaviour
 {
     public float speed;
+    public bool boss;
     Rigidbody rb;
     GameObject player;
     // Start is called before the first frame update
@@ -21,7 +22,7 @@ public class Enemy : MonoBehaviour
         {
             rb.AddForce((player.transform.position - transform.position).normalized * speed);
         }
-        if (transform.position.y < -2)
+        if (transform.position.y < -2 && !boss)
         {
             Destroy(gameObject);
         }

@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class ComeOnAndSlam : MonoBehaviour
 {
+    public float pushForce;
+    public float distanceStaling;
     // Start is called before the first frame update
     void Start()
     {
@@ -16,11 +18,11 @@ public class ComeOnAndSlam : MonoBehaviour
         
     }
 
-    private void OnTriggerStay(Collider other)
+    private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.CompareTag("Enemy"))
         {
-            other.gameObject.GetComponent<Rigidbody>().AddRelativeForce((-(other.gameObject.transform.position - transform.position).normalized * 40f) / (other.gameObject.transform.position - transform.position).magnitude, ForceMode.Impulse);
+            other.gameObject.GetComponent<Rigidbody>().AddForce(((other.gameObject.transform.position - transform.position).normalized * pushForce) / ((other.gameObject.transform.position - transform.position).magnitude * distanceStaling), ForceMode.Impulse);
         }
     }
 }

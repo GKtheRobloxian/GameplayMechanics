@@ -20,11 +20,16 @@ public class PlayerController : MonoBehaviour
     public float dashMomentum;
     public GameObject particles;
     Rigidbody rb;
+    float floorY;
+    float jumpTime;
+    public float hangTime;
+    public float jumpSpeed;
     // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         speedInitial = speed;
+        slamHitbox.transform.position = new Vector3(slamHitbox.transform.position.x, 10000f, slamHitbox.transform.position.z);
     }
 
     // Update is called once per frame
@@ -38,7 +43,6 @@ public class PlayerController : MonoBehaviour
         {
             projAimer.SetActive(false);
         }
-        slamHitbox.SetActive(hasSlam);
         visual.transform.position = transform.position;
         forward = Input.GetAxisRaw("Vertical");
         hori = Input.GetAxisRaw("Horizontal");
@@ -84,6 +88,16 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Ground") && hasSlam)
+        {
+            slamHitbox.GetComponent<ParticleSystem>().Play();
+            slamHitbox.transform.position = new Vector3(slamHitbox.transform.position.x, transform.position.y, slamHitbox.transform.position.z);
+            StartCoroutine(SlamCheck());
+        }
+    }
+
     private void OnTriggerEnter(Collider collision)
     {
         if(collision.gameObject.CompareTag("Dash"))
@@ -104,14 +118,32 @@ public class PlayerController : MonoBehaviour
         {
             hasSlam = true;
             Destroy(collision.gameObject);
-            StartCoroutine(SlamCheck());
+            StartCoroutine(Smash());
+        }
+    }
+
+    IEnumerator Smash()
+    {
+        floorY = transform.position.y;
+        float jumpTime = Time.time + hangTime;
+
+        while(Time.time  < jumpTime)
+        {
+            rb.velocity = new Vector2(rb.velocity.x, jumpSpeed);
+            yield return null;
+        }
+
+        while(transform.position.y > floorY)
+        {
+            rb.velocity = new Vector2(rb.velocity.x, -jumpSpeed * 2);
+            yield return null;
         }
     }
     IEnumerator SlamCheck()
     {
         yield return new WaitForSeconds(0.5f);
         hasSlam = false;
-        slamHitbox.SetActive(false);
+        slamHitbox.transform.position = slamHitbox.transform.position - Vector3.up * slamHitbox.transform.position.y + Vector3.up * 10000f;
         StopCoroutine(SlamCheck());
     }
 
