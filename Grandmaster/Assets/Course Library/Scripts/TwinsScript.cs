@@ -7,6 +7,7 @@ public class TwinsScript : MonoBehaviour
 {
     public float healthPoints = 20f;
     public GameObject sliderr;
+    public float damageTaking;
     public Slider realSlide;
     public Image fill;
 
@@ -22,7 +23,7 @@ public class TwinsScript : MonoBehaviour
     void Update()
     {
         sliderr.transform.position = transform.position + Vector3.up;
-        sliderr.transform.LookAt(GameObject.Find("Main Camera").transform.position);
+        sliderr.transform.LookAt(-GameObject.Find("Main Camera").transform.position);
         float random = Random.Range(-3.0f, 3.0f);
         float random2 = Random.Range(-3.0f, 3.0f);
         if (transform.position.y < -2)
@@ -47,7 +48,7 @@ public class TwinsScript : MonoBehaviour
     {
         if (collision.gameObject == GameObject.Find("Player"))
         {
-            healthPoints--;
+            healthPoints -= 0.1f * (Mathf.Abs(collision.gameObject.GetComponent<Rigidbody>().velocity.x) + Mathf.Abs(collision.gameObject.GetComponent<Rigidbody>().velocity.z));
         }
     }
 }

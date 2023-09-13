@@ -12,13 +12,13 @@ public class SpawnManager : MonoBehaviour
     public GameObject[] powerup;
     public float countdown = 10f;
     bool spawningProcess = false;
-    int enemiesToSpawn = 1;
+    int enemiesToSpawn = 5;
     int powerupCheck;
     public int enemyCount;
     // Start is called before the first frame update
     void Start()
     {
-        StartCoroutine(Spawning(1));
+        StartCoroutine(Spawning(5));
     }
 
     // Update is called once per frame

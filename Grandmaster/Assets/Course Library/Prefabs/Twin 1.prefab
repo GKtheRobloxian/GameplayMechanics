@@ -606,7 +606,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5698942431196787273}
   serializedVersion: 4
-  m_Mass: 2.4
+  m_Mass: 3.6
   m_Drag: 0
   m_AngularDrag: 0
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -637,7 +637,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85524ac77418ff04583b1ab6917b573d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 5.5
+  speed: 8.25
   boss: 1
 --- !u!114 &8886901500988784592
 MonoBehaviour:
@@ -651,7 +651,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 133558700c732b84084a0ade1d232fe8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  healthPoints: 10
+  healthPoints: 35
   sliderr: {fileID: 752662490710256331}
+  damageTaking: 0
   realSlide: {fileID: 4752982648513059841}
   fill: {fileID: 3536212123098356292}
